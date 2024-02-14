@@ -1,0 +1,68 @@
+mql5
+//+------------------------------------------------------------------+
+//|                                              Discovery EA.mq5     |
+//|                   Copyright 2022, Forex Robot Easy Team          |
+//|              https://www.forexroboteasy.com                      |
+//+------------------------------------------------------------------+
+
+// Define input parameters
+input int HigherTimeframe = PERIOD_H4; // Higher timeframe for trade direction
+input int LowerTimeframe = PERIOD_M30; // Lower timeframe for trade initiation
+
+// Define channel system parameters
+double UpperChannelLevel = 1.5; // Upper channel level
+double LowerChannelLevel = -1.5; // Lower channel level
+
+//+------------------------------------------------------------------+
+//| Expert initialization function                                   |
+//+------------------------------------------------------------------+
+int OnInit()
+{
+    // Add necessary initialization code here
+
+    return(INIT_SUCCEEDED);
+}
+
+//+------------------------------------------------------------------+
+//| Expert deinitialization function                                 |
+//+------------------------------------------------------------------+
+void OnDeinit(const int reason)
+{
+    // Add necessary deinitialization code here
+}
+
+//+------------------------------------------------------------------+
+//| Expert tick function                                             |
+//+------------------------------------------------------------------+
+void OnTick()
+{
+    // Get current price data
+    double upperChannelValue = iCustom(Symbol(), HigherTimeframe, 'Channel', 0, 0);
+    double lowerChannelValue = iCustom(Symbol(), LowerTimeframe, 'Channel', 0, 0);
+
+    // Check if both higher and lower timeframe signals align
+    if (upperChannelValue > UpperChannelLevel && lowerChannelValue > UpperChannelLevel)
+    {
+        // Open a buy trade
+        OrderSend(Symbol(), OP_BUY, 0.01, Ask, 0, 0, 0, 'Discovery EA', 0, 0, Green);
+    }
+    else if (upperChannelValue < LowerChannelLevel && lowerChannelValue < LowerChannelLevel)
+    {
+        // Open a sell trade
+        OrderSend(Symbol(), OP_SELL, 0.01, Bid, 0, 0, 0, 'Discovery EA', 0, 0, Red);
+    }
+}
+
+//+------------------------------------------------------------------+
+//| Expert start function                                            |
+//+------------------------------------------------------------------+
+void OnStart()
+{
+    // Add necessary start code here
+
+    while (!IsStopped())
+    {
+        OnTick();
+        Sleep(1000);
+    }
+}
